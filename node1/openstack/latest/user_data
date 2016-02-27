@@ -15,12 +15,12 @@ write_files:
 
 coreos:
   etcd2:
-    advertise-client-urls: http://192.168.10.2:2379
-    initial-advertise-peer-urls: http://192.168.10.2:2380
+    advertise-client-urls: http://192.168.1.122.2:2379
+    initial-advertise-peer-urls: http://192.168.1.122.2:2380
     listen-client-urls: http://0.0.0.0:2379
-    listen-peer-urls: http://192.168.10.2:2380
+    listen-peer-urls: http://192.168.1.122.2:2380
     initial-cluster-state: new
-    initial-cluster: kubernetes-node-1=http://192.168.10.2:2380,kubernetes-node-2=http://192.168.10.3:2380,kubernetes-node-3=http://192.168.10.4:2380,kubernetes-master=http://192.168.10.1:2380
+    initial-cluster: kubernetes-node-1=http://192.168.1.122.2:2380,kubernetes-node-2=http://192.168.1.122.3:2380,kubernetes-node-3=http://192.168.1.122.4:2380,kubernetes-master=http://192.168.1.122.1:2380
   units:
     - name: static.network
       command: start
@@ -30,9 +30,9 @@ coreos:
         MACAddress=52:54:00:00:00:0
 
         [Network]
-        Address=192.168.10.2/24
-        DNS=192.168.10.254
-        Gateway=192.168.10.254
+        Address=192.168.1.122.2/24
+        DNS=192.168.1.122.254
+        Gateway=192.168.1.122.254
     - name: cbr0.netdev
       command: start
       content: |
@@ -128,7 +128,7 @@ coreos:
         Requires=opt-kubernetes.mount docker.socket
 
         [Service]
-        ExecStart=/opt/kubernetes/bin/kubelet         --address=0.0.0.0         --hostname-override=192.168.10.2         --api-servers=http://192.168.10.1:8080         --cluster-dns=10.11.0.254         --cluster-domain=cluster.local         --config=/opt/kubernetes/manifests
+        ExecStart=/opt/kubernetes/bin/kubelet         --address=0.0.0.0         --hostname-override=192.168.1.122.2         --api-servers=http://192.168.1.122.1:8080         --cluster-dns=10.11.0.254         --cluster-domain=cluster.local         --config=/opt/kubernetes/manifests
         Restart=always
         RestartSec=2
 
@@ -145,7 +145,7 @@ coreos:
         Requires=opt-kubernetes.mount
 
         [Service]
-        ExecStart=/opt/kubernetes/bin/kube-proxy         --master=http://192.168.10.1:8080         --hostname-override=192.168.10.2
+        ExecStart=/opt/kubernetes/bin/kube-proxy         --master=http://192.168.1.122.1:8080         --hostname-override=192.168.1.122.2
         Restart=always
         RestartSec=2
 
