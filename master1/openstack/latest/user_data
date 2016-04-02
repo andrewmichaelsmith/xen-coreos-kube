@@ -292,7 +292,3 @@ coreos:
         [Install]
         WantedBy=multi-user.target
 
-  update:
-    group: beta
-    reboot-strategy: off
-
