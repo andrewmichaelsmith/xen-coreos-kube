@@ -12,6 +12,181 @@ write_files:
       [Journal]
       SystemMaxUse=50M
       RuntimeMaxUse=50M
+  - path: /etc/kubernetes/ssl/ca.pem
+    permissions: '0644'
+    content: |
+      -----BEGIN CERTIFICATE-----
+       -----END CERTIFICATE-----
+  - path: /etc/kubernetes/ssl/apiserver.pem
+    permissions: '0644'
+    content: |
+      -----BEGIN CERTIFICATE-----
+       -----END CERTIFICATE-----
+  - path: /etc/kubernetes/ssl/apiserver-key.pem
+    permissions: '0600'
+    owner: root:root
+    content: |
+      -----BEGIN RSA PRIVATE KEY-----
+      -----END RSA PRIVATE KEY-----
+  - path: /etc/flannel/options.env
+    permissions: '0644'
+    content: |
+      FLANNELD_IFACE=192.168.40.1
+      FLANNELD_ETCD_ENDPOINTS=http://192.168.40.1:2379
+  - path: /etc/kubernetes/manifests/kube-apiserver.yaml
+    permissions: '0644'
+    content: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: kube-apiserver
+        namespace: kube-system
+      spec:
+        hostNetwork: true
+        containers:
+        - name: kube-apiserver
+          image: quay.io/coreos/hyperkube:v1.2.0_coreos.0
+          command:
+          - /hyperkube
+          - apiserver
+          - --bind-address=0.0.0.0
+          - --etcd-servers=http://192.168.40.1:2379
+          - --allow-privileged=true
+          - --service-cluster-ip-range=10.3.0.0/24
+          - --secure-port=443
+          - --advertise-address=192.168.40.1
+          - --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
+          - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
+          - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+          - --client-ca-file=/etc/kubernetes/ssl/ca.pem
+          - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+          ports:
+          - containerPort: 443
+            hostPort: 443
+            name: https
+          - containerPort: 8080
+            hostPort: 8080
+            name: local
+          volumeMounts:
+          - mountPath: /etc/kubernetes/ssl
+            name: ssl-certs-kubernetes
+            readOnly: true
+          - mountPath: /etc/ssl/certs
+            name: ssl-certs-host
+            readOnly: true
+        volumes:
+        - hostPath:
+            path: /etc/kubernetes/ssl
+          name: ssl-certs-kubernetes
+        - hostPath:
+            path: /usr/share/ca-certificates
+          name: ssl-certs-host
+  - path: /etc/kubernetes/manifests/kube-proxy.yaml
+    permissions: '0644'
+    content: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: kube-proxy
+        namespace: kube-system
+      spec:
+        hostNetwork: true
+        containers:
+        - name: kube-proxy
+          image: quay.io/coreos/hyperkube:v1.2.0_coreos.0
+          command:
+          - /hyperkube
+          - proxy
+          - --master=http://127.0.0.1:8080
+          - --proxy-mode=iptables
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /etc/ssl/certs
+            name: ssl-certs-host
+            readOnly: true
+        volumes:
+        - hostPath:
+            path: /usr/share/ca-certificates
+          name: ssl-certs-host
+  - path: /srv/kubernetes/manifests/kube-controller-manager.yaml
+    permissions: '0644'
+    content: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: kube-controller-manager
+        namespace: kube-system
+      spec:
+        hostNetwork: true
+        containers:
+        - name: kube-controller-manager
+          image: quay.io/coreos/hyperkube:v1.2.0_coreos.0
+          command:
+          - /hyperkube
+          - controller-manager
+          - --master=http://127.0.0.1:8080
+          - --service-account-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+          - --root-ca-file=/etc/kubernetes/ssl/ca.pem
+          livenessProbe:
+            httpGet:
+              host: 127.0.0.1
+              path: /healthz
+              port: 10252
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          volumeMounts:
+          - mountPath: /etc/kubernetes/ssl
+            name: ssl-certs-kubernetes
+            readOnly: true
+          - mountPath: /etc/ssl/certs
+            name: ssl-certs-host
+            readOnly: true
+        volumes:
+        - hostPath:
+            path: /etc/kubernetes/ssl
+          name: ssl-certs-kubernetes
+        - hostPath:
+            path: /usr/share/ca-certificates
+          name: ssl-certs-host
+  - path: /srv/kubernetes/manifests/kube-scheduler.yaml
+    permissions: '0644'
+    content: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: kube-scheduler
+        namespace: kube-system
+      spec:
+        hostNetwork: true
+        containers:
+        - name: kube-scheduler
+          image: quay.io/coreos/hyperkube:v1.2.0_coreos.0
+          command:
+          - /hyperkube
+          - scheduler
+          - --master=http://127.0.0.1:8080
+          livenessProbe:
+            httpGet:
+              host: 127.0.0.1
+              path: /healthz
+              port: 10251
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+  - path: /etc/conf.d/nfs
+    permissions: '0644'
+    content: |
+      OPTS_RPC_MOUNTD=""
+  - path: /opt/bin/wupiao
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # [w]ait [u]ntil [p]ort [i]s [a]ctually [o]pen
+      [ -n "$1" ] && \
+        until curl -o /dev/null -sIf http://${1}; do \
+          sleep 1 && echo .;
+        done;
+      exit $?
 
 coreos:
   etcd2:
@@ -94,97 +269,30 @@ coreos:
         ListenStream=2375
         BindIPv6Only=both
         Service=docker.service
-
-        [Install]
-        WantedBy=sockets.target
-    - name: opt-kubernetes.mount
+   - name: kubelet.service
       command: start
       content: |
-        [Unit]
-        ConditionVirtualization=|vm
+        [Service]
+        ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
-        [Mount]
-        What=kubernetes
-        Where=/opt/kubernetes
-        Options=ro,trans=virtio,version=9p2000.L
-        Type=9p
+        Environment=KUBELET_VERSION=v1.2.0_coreos.0
+        ExecStart=/usr/lib/coreos/kubelet-wrapper \
+        --api-servers=http://127.0.0.1:8080 \
+        --register-node=true \
+        --allow-privileged=true \
+        --config=/etc/kubernetes/manifests \
+        --hostname-override=192.168.40.2 \
+        --cluster-dns=10.3.0.10 \
+        --cluster-domain=cluster.local \
+        --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
+        --tls-cert-file=/etc/kubernetes/ssl/worker.pem \
+        --tls-private-key-file=/etc/kubernetes/ssl/worker-key.pem
+        Restart=always
+        RestartSec=10
+        [Install]
+        WantedBy=multi-user.target
+
   update:
-    group: alpha
+    group: beta
     reboot-strategy: off
-
-#cloud-config
-
-coreos:
-  units:
-    - name: kube-apiserver.service
-      command: start
-      content: |
-        [Unit]
-        After=opt-kubernetes.mount etcd2.service
-        ConditionFileIsExecutable=/opt/kubernetes/bin/kube-apiserver
-        Description=Kubernetes API Server
-        Documentation=https://github.com/kubernetes/kubernetes
-        Requires=opt-kubernetes.mount etcd2.service
-
-        [Service]
-        ExecStart=/opt/kubernetes/bin/kube-apiserver         --service-account-key-file=/opt/kubernetes/certs/kube-serviceaccount.key         --service-account-lookup=false         --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota         --insecure-bind-address=0.0.0.0         --insecure-port=8080         --etcd-servers=http://127.0.0.1:2379         --kubelet-port=10250         --service-cluster-ip-range=10.11.0.0/16
-        Restart=always
-        RestartSec=2
-
-        [Install]
-        WantedBy=multi-user.target
-    - name: kube-controller-manager.service
-      command: start
-      content: |
-        [Unit]
-        After=opt-kubernetes.mount kube-apiserver.service
-        ConditionFileIsExecutable=/opt/kubernetes/bin/kube-controller-manager
-        Description=Kubernetes Controller Manager
-        Documentation=https://github.com/kubernetes/kubernetes
-        Requires=opt-kubernetes.mount kube-apiserver.service
-
-        [Service]
-        ExecStart=/opt/kubernetes/bin/kube-controller-manager         --master=127.0.0.1:8080         --service-account-private-key-file=/opt/kubernetes/certs/kube-serviceaccount.key         Restart=always
-        RestartSec=2
-
-        [Install]
-        WantedBy=multi-user.target
-    - name: kube-scheduler.service
-      command: start
-      content: |
-        [Unit]
-        After=opt-kubernetes.mount kube-apiserver.service
-        ConditionFileIsExecutable=/opt/kubernetes/bin/kube-scheduler
-        Description=Kubernetes Scheduler
-        Documentation=https://github.com/kubernetes/kubernetes
-        Requires=opt-kubernetes.mount kube-apiserver.service
-
-        [Service]
-        ExecStart=/opt/kubernetes/bin/kube-scheduler         --master=127.0.0.1:8080
-        Restart=always
-        RestartSec=2
-
-        [Install]
-        WantedBy=multi-user.target
-    - name: kube-addons.service
-      command: start
-      content: |
-        [Unit]
-        After=opt-kubernetes.mount kube-apiserver.service
-        ConditionPathIsDirectory=/opt/kubernetes/addons
-        Description=Kubernetes addons
-        Documentation=https://github.com/kubernetes/kubernetes
-        Requires=opt-kubernetes.mount
-        Wants=kube-apiserver.service
-
-        [Service]
-        Type=oneshot
-        ExecStartPre=/bin/bash -c 'while [[ "$(curl -s http://127.0.0.1:8080/healthz)" != "ok" ]]; do sleep 1; done'
-        ExecStartPre=/bin/sleep 10
-        ExecStart=/opt/kubernetes/bin/kubectl create -f /opt/kubernetes/addons
-        ExecStop=/opt/kubernetes/bin/kubectl delete -f /opt/kubernetes/addons
-        RemainAfterExit=yes
-
-        [Install]
-        WantedBy=multi-user.target
 
