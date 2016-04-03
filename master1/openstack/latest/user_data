@@ -269,7 +269,7 @@ coreos:
         ListenStream=2375
         BindIPv6Only=both
         Service=docker.service
-   - name: kubelet.service
+    - name: kubelet.service
       command: start
       content: |
         [Service]
