@@ -31,8 +31,8 @@ coreos:
 
         [Network]
         Address=192.168.122.3/24
-        DNS=192.168.122.254
-        Gateway=192.168.122.254
+        DNS=192.168.122.1
+        Gateway=192.168.122.1
     - name: cbr0.netdev
       command: start
       content: |
