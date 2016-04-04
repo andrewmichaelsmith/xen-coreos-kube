@@ -206,8 +206,8 @@ coreos:
 
         [Network]
         Address=192.168.122.254/24
-        DNS=192.168.122.254
-        Gateway=192.168.122.254
+        DNS=192.168.122.1
+        Gateway=192.168.122.1
     - name: cbr0.netdev
       command: start
       content: |
@@ -284,9 +284,6 @@ coreos:
         --hostname-override=192.168.40.2 \
         --cluster-dns=10.3.0.10 \
         --cluster-domain=cluster.local \
-        --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
-        --tls-cert-file=/etc/kubernetes/ssl/worker.pem \
-        --tls-private-key-file=/etc/kubernetes/ssl/worker-key.pem
         Restart=always
         RestartSec=10
         [Install]
