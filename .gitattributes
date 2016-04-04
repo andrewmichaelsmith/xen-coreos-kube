@@ -1,0 +1,8 @@
+certs/apiserver.csr filter=git-crypt diff=git-crypt
+certs/apiserver-key.pem filter=git-crypt diff=git-crypt
+certs/apiserver.pem filter=git-crypt diff=git-crypt
+certs/ca-key.pem filter=git-crypt diff=git-crypt
+certs/ca.pem filter=git-crypt diff=git-crypt
+certs/ca.srl filter=git-crypt diff=git-crypt
+
+
