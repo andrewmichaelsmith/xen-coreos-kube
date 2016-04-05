@@ -1,3 +1,4 @@
 *.qcow2
 *.img
 *.swp
+master1/openstack/latest/user_data

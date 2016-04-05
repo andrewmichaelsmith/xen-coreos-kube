@@ -15,19 +15,16 @@ write_files:
   - path: /etc/kubernetes/ssl/ca.pem
     permissions: '0644'
     content: |
-      -----BEGIN CERTIFICATE-----
-       -----END CERTIFICATE-----
+     	CA.PEM 
   - path: /etc/kubernetes/ssl/apiserver.pem
     permissions: '0644'
     content: |
-      -----BEGIN CERTIFICATE-----
-       -----END CERTIFICATE-----
+	APISERVER.PEM
   - path: /etc/kubernetes/ssl/apiserver-key.pem
     permissions: '0600'
     owner: root:root
     content: |
-      -----BEGIN RSA PRIVATE KEY-----
-      -----END RSA PRIVATE KEY-----
+	APISERVER-KEY.PEM
   - path: /etc/flannel/options.env
     permissions: '0644'
     content: |
