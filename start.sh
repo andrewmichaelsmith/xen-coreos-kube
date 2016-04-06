@@ -15,7 +15,8 @@ virt-install \
   --filesystem /var/lib/libvirt/images/coreos/master1/,config-2,type=mount,mode=squash \
   --network bridge=virbr0,mac=52:54:00:00:00:3 \
   --vnc \
-  --noautoconsole
+  --noautoconsole \
+  --hvm
 
 virt-install \
   --connect qemu:///system \
@@ -29,7 +30,8 @@ virt-install \
   --filesystem /var/lib/libvirt/images/coreos/node1/,config-2,type=mount,mode=squash \
   --network bridge=virbr0,mac=52:54:00:00:00:0 \
   --vnc \
-  --noautoconsole
+  --noautoconsole \
+  --hvm
 
 virt-install \
   --connect qemu:///system \
@@ -43,7 +45,8 @@ virt-install \
   --filesystem /var/lib/libvirt/images/coreos/node2/,config-2,type=mount,mode=squash \
   --network bridge=virbr0,mac=52:54:00:00:00:1 \
   --vnc \
-  --noautoconsole
+  --noautoconsole \
+  --hvm
 
 virt-install \
   --connect qemu:///system \
@@ -57,6 +60,7 @@ virt-install \
   --filesystem /var/lib/libvirt/images/coreos/node3/,config-2,type=mount,mode=squash \
   --network bridge=virbr0,mac=52:54:00:00:00:2 \
   --vnc \
-  --noautoconsole
+  --noautoconsole \
+  --hvm
 
 
