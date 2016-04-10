@@ -1,1 +1,7 @@
 Master should probably be MAC :00:00
+
+git grep FIXME
+
+gateway is the vm host, which is 122.1
+
+node2/node3 need updating based on node1

@@ -12,6 +12,39 @@ write_files:
       [Journal]
       SystemMaxUse=50M
       RuntimeMaxUse=50M
+  - path: /etc/flannel/options.env
+    permissions: '0644'
+    content: |
+      FLANNELD_IFACE=192.168.122.2
+      FLANNELD_ETCD_ENDPOINTS=http://192.168.122.2:2379,http://192.168.122.3:2379,http://192.168.122.4:2379,http://192.168.122.254:2379
+  - path: /etc/kubernetes/manifests/kube-proxy.yaml
+    permissions: '0644'
+    content: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: kube-proxy
+        namespace: kube-system
+      spec:
+        hostNetwork: true
+        containers:
+        - name: kube-proxy
+          image: quay.io/coreos/hyperkube:v1.2.0_coreos.0
+          command:
+          - /hyperkube
+          - proxy
+          - --master=http://192.168.1.254:8080
+          - --proxy-mode=iptables
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /etc/ssl/certs
+            name: ssl-certs-host
+            readOnly: true
+        volumes:
+        - hostPath:
+            path: /usr/share/ca-certificates
+          name: ssl-certs-host
 
 coreos:
   etcd2:
@@ -76,13 +109,30 @@ coreos:
           content: |
             [Service]
             Environment=ETCD_NAME=%H
+    - name: flanneld.service
+      command: start
+      drop-ins:
+        - name: 40-ExecStartPre-symlink.conf
+          content: |
+            [Service]
+            ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
+        - name: 50-network-config.conf
+          content: |
+            [Unit]
+            Requires=etcd2.service
+            #FIXME Not sure about this
+            #[Service]
+            #ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"10.2.0.0/16", "Backend": {"Type": "vxlan"}}'
     - name: docker.service
       command: start
       drop-ins:
         - name: 50-opts.conf
           content: |
             [Service]
-            Environment='DOCKER_OPTS=--bridge=cbr0 --iptables=false'
+            #Environment='DOCKER_OPTS=--bridge=cbr0 --iptables=false'
+            Requires=flanneld.service
+            After=flanneld.service
+
     - name: docker-tcp.socket
       command: start
       enable: yes
@@ -97,17 +147,6 @@ coreos:
 
         [Install]
         WantedBy=sockets.target
-    - name: opt-kubernetes.mount
-      command: start
-      content: |
-        [Unit]
-        ConditionVirtualization=|vm
-
-        [Mount]
-        What=kubernetes
-        Where=/opt/kubernetes
-        Options=ro,trans=virtio,version=9p2000.L
-        Type=9p
   update:
     group: alpha
     reboot-strategy: off
@@ -120,34 +159,20 @@ coreos:
     - name: kubelet.service
       command: start
       content: |
-        [Unit]
-        After=opt-kubernetes.mount docker.socket
-        ConditionFileIsExecutable=/opt/kubernetes/bin/kubelet
-        Description=Kubernetes Kubelet
-        Documentation=https://github.com/kubernetes/kubernetes
-        Requires=opt-kubernetes.mount docker.socket
-
         [Service]
-        ExecStart=/opt/kubernetes/bin/kubelet         --address=0.0.0.0         --hostname-override=192.168.122.2         --api-servers=http://192.168.122.254:8080         --cluster-dns=10.11.0.254         --cluster-domain=cluster.local         --config=/opt/kubernetes/manifests
-        Restart=always
-        RestartSec=2
+        ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
+        Environment=KUBELET_VERSION=v1.2.0_coreos.0
+        ExecStart=/usr/lib/coreos/kubelet-wrapper \
+        --api-servers=http://192.168.1.254:8080 \
+        --register-node=true \
+        --allow-privileged=true \
+        --config=/etc/kubernetes/manifests \
+        --hostname-override=192.168.122.2 \
+        --cluster-dns=10.3.0.10 \
+        --cluster-domain=cluster.local \
+        Restart=always
+        RestartSec=10
         [Install]
         WantedBy=multi-user.target
-    - name: kube-proxy.service
-      command: start
-      content: |
-        [Unit]
-        After=opt-kubernetes.mount
-        ConditionFileIsExecutable=/opt/kubernetes/bin/kube-proxy
-        Description=Kubernetes Proxy
-        Documentation=https://github.com/kubernetes/kubernetes
-        Requires=opt-kubernetes.mount
 
-        [Service]
-        ExecStart=/opt/kubernetes/bin/kube-proxy         --master=http://192.168.122.254:8080         --hostname-override=192.168.122.2
-        Restart=always
-        RestartSec=2
-
-        [Install]
-        WantedBy=multi-user.target
