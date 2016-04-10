@@ -106,7 +106,7 @@ write_files:
         - hostPath:
             path: /usr/share/ca-certificates
           name: ssl-certs-host
-  - path: /srv/kubernetes/manifests/kube-controller-manager.yaml
+  - path: /etc/kubernetes/manifests/kube-controller-manager.yaml
     permissions: '0644'
     content: |
       apiVersion: v1
@@ -146,7 +146,7 @@ write_files:
         - hostPath:
             path: /usr/share/ca-certificates
           name: ssl-certs-host
-  - path: /srv/kubernetes/manifests/kube-scheduler.yaml
+  - path: /etc/kubernetes/manifests/kube-scheduler.yaml
     permissions: '0644'
     content: |
       apiVersion: v1
