@@ -29,7 +29,7 @@ write_files:
         hostNetwork: true
         containers:
         - name: kube-proxy
-          image: quay.io/coreos/hyperkube:v1.2.0_coreos.0
+          image: gcr.io/google_containers/hyperkube-amd64:v1.2.2
           command:
           - /hyperkube
           - proxy
