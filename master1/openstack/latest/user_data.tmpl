@@ -28,8 +28,8 @@ write_files:
   - path: /etc/flannel/options.env
     permissions: '0644'
     content: |
-      FLANNELD_IFACE=192.168.40.1
-      FLANNELD_ETCD_ENDPOINTS=http://192.168.40.1:2379
+      FLANNELD_IFACE=192.168.122.254
+      FLANNELD_ETCD_ENDPOINTS=http://192.168.122.2:2379,http://192.168.122.3:2379,http://192.168.122.4:2379,http://192.168.122.254:2379
   - path: /etc/kubernetes/manifests/kube-apiserver.yaml
     permissions: '0644'
     content: |
@@ -47,11 +47,11 @@ write_files:
           - /hyperkube
           - apiserver
           - --bind-address=0.0.0.0
-          - --etcd-servers=http://192.168.40.1:2379
+          - --etcd-servers=http://192.168.122.2:2379,http://192.168.122.3:2379,http://192.168.122.4:2379,http://192.168.122.254:2379
           - --allow-privileged=true
           - --service-cluster-ip-range=10.3.0.0/24
           - --secure-port=443
-          - --advertise-address=192.168.40.1
+          - --advertise-address=192.168.122.254
           - --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
           - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
           - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
@@ -248,13 +248,28 @@ coreos:
           content: |
             [Service]
             Environment=ETCD_NAME=%H
+    - name: flanneld.service
+      command: start
+      drop-ins:
+        - name: 40-ExecStartPre-symlink.conf
+          content: |
+            [Service]
+            ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
+        - name: 50-network-config.conf
+          content: |
+            [Unit]
+            Requires=etcd2.service
+            [Service]
+            ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"10.2.0.0/16", "Backend": {"Type": "vxlan"}}'
     - name: docker.service
       command: start
       drop-ins:
         - name: 50-opts.conf
           content: |
             [Service]
-            Environment='DOCKER_OPTS=--bridge=cbr0 --iptables=false'
+            #Environment='DOCKER_OPTS=--bridge=cbr0 --iptables=false'
+            Requires=flanneld.service
+            After=flanneld.service
     - name: docker-tcp.socket
       command: start
       enable: yes
@@ -278,7 +293,7 @@ coreos:
         --register-node=true \
         --allow-privileged=true \
         --config=/etc/kubernetes/manifests \
-        --hostname-override=192.168.40.2 \
+        --hostname-override=192.168.122.254 \
         --cluster-dns=10.3.0.10 \
         --cluster-domain=cluster.local \
         Restart=always
