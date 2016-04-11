@@ -34,6 +34,7 @@ write_files:
           - proxy
           - --master=http://192.168.122.254:8080
           - --proxy-mode=iptables
+          - --conntrack-max=0
           securityContext:
             privileged: true
           volumeMounts:
