@@ -26,14 +26,13 @@ write_files:
         name: kube-proxy
         namespace: kube-system
       spec:
-        hostNetwork: true
         containers:
         - name: kube-proxy
           image: gcr.io/google_containers/hyperkube-amd64:v1.2.2
           command:
           - /hyperkube
           - proxy
-          - --master=http://192.168.1.254:8080
+          - --master=http://192.168.122.254:8080
           - --proxy-mode=iptables
           securityContext:
             privileged: true
@@ -164,7 +163,7 @@ coreos:
 
         Environment=KUBELET_VERSION=v1.2.0_coreos.0
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
-        --api-servers=http://192.168.1.254:8080 \
+        --api-servers=http://192.168.122.254:8080 \
         --register-node=true \
         --allow-privileged=true \
         --config=/etc/kubernetes/manifests \
