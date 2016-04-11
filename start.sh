@@ -5,7 +5,7 @@ virt-install \
   --import \
   --name master1 \
   --ram 1024 \
-  --vcpus 1 \
+  --vcpus 2 \
   --os-type=linux \
   --os-variant=virtio26 \
   --disk path=/var/lib/libvirt/images/coreos/master1.qcow2,format=qcow2,bus=virtio \
@@ -19,8 +19,8 @@ virt-install \
   --connect qemu:///system \
   --import \
   --name node1 \
-  --ram 1024 \
-  --vcpus 1 \
+  --ram 512 \
+  --vcpus 2 \
   --os-type=linux \
   --os-variant=virtio26 \
   --disk path=/var/lib/libvirt/images/coreos/node1.qcow2,format=qcow2,bus=virtio \
@@ -34,7 +34,7 @@ virt-install \
   --connect qemu:///system \
   --import \
   --name node2 \
-  --ram 1024 \
+  --ram 512 \
   --vcpus 1 \
   --os-type=linux \
   --os-variant=virtio26 \
@@ -49,7 +49,7 @@ virt-install \
   --connect qemu:///system \
   --import \
   --name node3 \
-  --ram 1024 \
+  --ram 512 \
   --vcpus 1 \
   --os-type=linux \
   --os-variant=virtio26 \
