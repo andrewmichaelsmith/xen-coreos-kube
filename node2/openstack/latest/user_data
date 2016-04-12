@@ -1,6 +1,6 @@
 #cloud-config
 
-hostname: kubernetes-node-1
+hostname: kubernetes-node-2
 
 ssh_authorized_keys:
   - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCUKf6ZNILSRI2FMcwLPQWF/BNLYreq9cX/vH16DZRrIjxBjehn+1bueywC+0sAbUE+3pjRTnYUDvmO0sHgbAN3brVeAXAYbbIPwcAJ9sd/hozKZ3lZyamZ6wPOlseCXPEV4ApGP64GH/5lkHSqEVe2mZFL2Th1rLX8/+jkpmjIzrKbxUTTwhs3yTm6RPb0gr1zgBfvWn5tKmM+wCLe1Zq8bFV7d+RHdS7pCCNJZLMxCaU6pjVM6c57JR4qYusdIS2cJkUfeGPDC2mdPUdDYV0W9GWc8fXR8vwO4E8tqLpP/rtQ1TqMfbZ3Q8Z0IjfCDpyM7dnrKEeXToWeqC+7Qco4l4qmkhiEw6ldacyMBSxcOVu7wbQJNCfagUyUEPbK1qYzn6jmqVWt4tnbM/g+qXnKP1NReE5SLqynFN6t5DbIIRlW9PA4437131lDQ7DIU3SfbMRJ+lGSWkGKMU/qtjTX6KsPJseFSJOnJmO0ZnWlc/6If6rPMQ9TPCwJ0D5ziNTvaFaR9Z4i0GRefQzlFWLNjLIsE5cCNtjXwr8H6rKHFqZ/qvnXAsIXQmaOku9WELWl5SYrhwm+hU34Dmd3eBY2PJwJiPABkmlacpIgaY2qAh3iwaNDEBbt3F/duWY9eAOPPeRUBQe+exHOBZn7hW4js1KethhFzL7+hvJ/1XlA5Q== root@xen
@@ -15,7 +15,7 @@ write_files:
   - path: /etc/flannel/options.env
     permissions: '0644'
     content: |
-      FLANNELD_IFACE=192.168.122.2
+      FLANNELD_IFACE=192.168.122.3
       FLANNELD_ETCD_ENDPOINTS=http://192.168.122.2:2379,http://192.168.122.3:2379,http://192.168.122.4:2379,http://192.168.122.254:2379
   - path: /etc/kubernetes/manifests/kube-proxy.yaml
     permissions: '0644'
@@ -48,10 +48,10 @@ write_files:
 
 coreos:
   etcd2:
-    advertise-client-urls: http://192.168.122.2:2379
-    initial-advertise-peer-urls: http://192.168.122.2:2380
+    advertise-client-urls: http://192.168.122.3:2379
+    initial-advertise-peer-urls: http://192.168.122.3:2380
     listen-client-urls: http://0.0.0.0:2379
-    listen-peer-urls: http://192.168.122.2:2380
+    listen-peer-urls: http://192.168.122.3:2380
     initial-cluster-state: new
     initial-cluster: kubernetes-node-1=http://192.168.122.2:2380,kubernetes-node-2=http://192.168.122.3:2380,kubernetes-node-3=http://192.168.122.4:2380,kubernetes-master=http://192.168.122.254:2380
   units:
@@ -60,10 +60,10 @@ coreos:
       content: |
         [Match]
         # Name=eth0
-        MACAddress=52:54:00:00:00:0
+        MACAddress=52:54:00:00:00:1
 
         [Network]
-        Address=192.168.122.2/24
+        Address=192.168.122.3/24
         DNS=192.168.122.1
         Gateway=192.168.122.1
     - name: cbr0.netdev
@@ -88,7 +88,7 @@ coreos:
       content: |
         [Match]
         # Name=eth1
-        MACAddress=52:54:00:00:01:0
+        MACAddress=52:54:00:00:01:1
 
         [Network]
         Bridge=cbr0
@@ -168,7 +168,7 @@ coreos:
         --register-node=true \
         --allow-privileged=true \
         --config=/etc/kubernetes/manifests \
-        --hostname-override=192.168.122.2 \
+        --hostname-override=192.168.122.3 \
         --cluster-dns=10.3.0.10 \
         --cluster-domain=cluster.local \
         Restart=always
