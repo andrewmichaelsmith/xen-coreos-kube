@@ -47,6 +47,8 @@ write_files:
           name: ssl-certs-host
 
 coreos:
+  update:
+    reboot-straegy: etcd-lock
   etcd2:
     advertise-client-urls: http://192.168.122.4:2379
     initial-advertise-peer-urls: http://192.168.122.4:2380
