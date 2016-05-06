@@ -89,6 +89,7 @@ write_files:
         name: kube-proxy
         namespace: kube-system
       spec:
+        hostNetwork: true
         containers:
         - name: kube-proxy
           image: gcr.io/google_containers/hyperkube-amd64:v1.2.2
