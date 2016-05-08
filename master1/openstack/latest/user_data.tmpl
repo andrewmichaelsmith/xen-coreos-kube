@@ -3,8 +3,7 @@
 hostname: kubernetes-master
 
 ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCUKf6ZNILSRI2FMcwLPQWF/BNLYreq9cX/vH16DZRrIjxBjehn+1bueywC+0sAbUE+3pjRTnYUDvmO0sHgbAN3brVeAXAYbbIPwcAJ9sd/hozKZ3lZyamZ6wPOlseCXPEV4ApGP64GH/5lkHSqEVe2mZFL2Th1rLX8/+jkpmjIzrKbxUTTwhs3yTm6RPb0gr1zgBfvWn5tKmM+wCLe1Zq8bFV7d+RHdS7pCCNJZLMxCaU6pjVM6c57JR4qYusdIS2cJkUfeGPDC2mdPUdDYV0W9GWc8fXR8vwO4E8tqLpP/rtQ1TqMfbZ3Q8Z0IjfCDpyM7dnrKEeXToWeqC+7Qco4l4qmkhiEw6ldacyMBSxcOVu7wbQJNCfagUyUEPbK1qYzn6jmqVWt4tnbM/g+qXnKP1NReE5SLqynFN6t5DbIIRlW9PA4437131lDQ7DIU3SfbMRJ+lGSWkGKMU/qtjTX6KsPJseFSJOnJmO0ZnWlc/6If6rPMQ9TPCwJ0D5ziNTvaFaR9Z4i0GRefQzlFWLNjLIsE5cCNtjXwr8H6rKHFqZ/qvnXAsIXQmaOku9WELWl5SYrhwm+hU34Dmd3eBY2PJwJiPABkmlacpIgaY2qAh3iwaNDEBbt3F/duWY9eAOPPeRUBQe+exHOBZn7hW4js1KethhFzL7+hvJ/1XlA5Q== root@xen
-
+  - SSH_KEY 
 write_files:
   - path: /etc/systemd/journald.conf
     permissions: 0644
@@ -15,7 +14,7 @@ write_files:
   - path: /etc/kubernetes/ssl/ca.pem
     permissions: '0644'
     content: |
-     	CA.PEM 
+        CA.PEM 
   - path: /etc/kubernetes/ssl/apiserver.pem
     permissions: '0644'
     content: |
@@ -41,7 +40,7 @@ write_files:
       spec:
         containers:
         - name: kube-apiserver
-          image: gcr.io/google_containers/hyperkube-amd64:v1.2.2
+          image: gcr.io/google_containers/hyperkube:v1.2.4
           command:
           - /hyperkube
           - apiserver
@@ -92,7 +91,7 @@ write_files:
         hostNetwork: true
         containers:
         - name: kube-proxy
-          image: gcr.io/google_containers/hyperkube-amd64:v1.2.2
+          image: gcr.io/google_containers/hyperkube:v1.2.4
           command:
           - /hyperkube
           - proxy
@@ -120,7 +119,7 @@ write_files:
       spec:
         containers:
         - name: kube-controller-manager
-          image: gcr.io/google_containers/hyperkube-amd64:v1.2.2
+          image: gcr.io/google_containers/hyperkube:v1.2.4
           command:
           - /hyperkube
           - controller-manager
@@ -154,7 +153,7 @@ write_files:
       spec:
         containers:
         - name: kube-scheduler
-          image: gcr.io/google_containers/hyperkube-amd64:v1.2.2
+          image: gcr.io/google_containers/hyperkube:v1.2.4
           command:
           - /hyperkube
           - scheduler
