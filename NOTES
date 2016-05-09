@@ -1,4 +1,0 @@
--sed -i 's/\<192.168.122.2\>/192.168.122.3/g' node2/openstack/latest/user_data 
--(breaks etcd config)
--fix MAC
--hostname
