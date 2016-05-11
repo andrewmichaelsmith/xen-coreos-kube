@@ -60,4 +60,8 @@ virt-install \
   --noautoconsole \
   --hvm
 
+virsh autostart master1
+virsh autostart node1
+virsh autostart node2
+virsh autostart node3
 
