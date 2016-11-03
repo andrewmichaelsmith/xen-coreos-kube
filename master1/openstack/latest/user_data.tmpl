@@ -72,6 +72,7 @@ write_files:
           - mountPath: /etc/ssl/certs
             name: ssl-certs-host
             readOnly: true
+        hostNetwork: true
         volumes:
         - hostPath:
             path: /etc/kubernetes/ssl
@@ -135,6 +136,7 @@ write_files:
           - mountPath: /etc/ssl/certs
             name: ssl-certs-host
             readOnly: true
+        hostNetwork: true
         volumes:
         - hostPath:
             path: /etc/kubernetes/ssl
@@ -151,6 +153,7 @@ write_files:
         name: kube-scheduler
         namespace: kube-system
       spec:
+        hostNetwork: true
         containers:
         - name: kube-scheduler
           image: gcr.io/google_containers/hyperkube:v1.3.5
