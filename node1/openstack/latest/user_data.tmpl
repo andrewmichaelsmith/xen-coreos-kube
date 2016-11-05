@@ -29,7 +29,7 @@ write_files:
         hostNetwork: true
         containers:
         - name: kube-proxy
-          image: gcr.io/google_containers/hyperkube:v1.3.5 
+          image: gcr.io/google_containers/hyperkube:v1.4.5 
           .ommand:
           - /hyperkube
           - proxy
@@ -172,7 +172,7 @@ coreos:
         [Service]
         ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
-        Environment=KUBELET_VERSION=v1.3.5_coreos.0
+        Environment=KUBELET_VERSION=v1.4.5_coreos.0
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
         --api-servers=http://192.168.122.254:8080 \
         --register-node=true \
