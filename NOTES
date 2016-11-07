@@ -2,3 +2,12 @@
 -(breaks etcd config)
 -fix MAC
 -hostname
+
+==
+
+-couldn't ping .122.1 (gateway) which meant images couldn't 
+ be pulled. so delete/creating sorted it.
+
+--I think this happens when creating fresh, which is a bit dodgy.
+
+
