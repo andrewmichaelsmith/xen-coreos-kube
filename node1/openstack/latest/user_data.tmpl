@@ -30,7 +30,7 @@ write_files:
         containers:
         - name: kube-proxy
           image: gcr.io/google_containers/hyperkube:v1.4.5 
-          .ommand:
+          command:
           - /hyperkube
           - proxy
           - --master=http://192.168.122.254:8080
