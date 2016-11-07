@@ -4,7 +4,7 @@ virt-install \
   --connect qemu:///system \
   --import \
   --name master1 \
-  --ram 2048 \
+  --ram 3072 \
   --vcpus 2 \
   --os-type=linux \
   --os-variant=virtio26 \
@@ -20,7 +20,7 @@ virt-install \
   --connect qemu:///system \
   --import \
   --name node1 \
-  --ram 2048 \
+  --ram 3072 \
   --vcpus 2 \
   --os-type=linux \
   --os-variant=virtio26 \
@@ -36,7 +36,7 @@ virt-install \
   --connect qemu:///system \
   --import \
   --name node2 \
-  --ram 2048 \
+  --ram 3072 \
   --vcpus 1 \
   --os-type=linux \
   --os-variant=virtio26 \
@@ -52,7 +52,7 @@ virt-install \
   --connect qemu:///system \
   --import \
   --name node3 \
-  --ram 2048 \
+  --ram 3072 \
   --vcpus 1 \
   --os-type=linux \
   --os-variant=virtio26 \
