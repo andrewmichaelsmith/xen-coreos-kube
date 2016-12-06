@@ -10,4 +10,18 @@
 
 --I think this happens when creating fresh, which is a bit dodgy.
 
+==
+
+mkdir /data/node1
+mkdir /data/node2
+mkdir /data/node3
+mkdir /data/master1
+
+chown -R libvirt-qemu:kvm /data
+
+?? sudo setfacl -R -m u:libvirt-qemu:rwx 
+
+
+
+
 

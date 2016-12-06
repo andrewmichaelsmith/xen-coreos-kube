@@ -57,13 +57,14 @@ coreos:
     listen-peer-urls: http://192.168.122.3:2380
     initial-cluster-state: new
     initial-cluster: kubernetes-node-1=http://192.168.122.2:2380,kubernetes-node-2=http://192.168.122.3:2380,kubernetes-node-3=http://192.168.122.4:2380,kubernetes-master=http://192.168.122.254:2380
+    data-dir: /var/lib/etcd
   units:
-    - name: var-lib-etcd2.mount
+    - name: var-lib-etcd.mount
       command: start
       content: |
         [Mount]
         What=persistent
-        Where=/var/lib/etcd2
+        Where=/var/lib/etcd
         Type=9p
     - name: static.network
       command: start
