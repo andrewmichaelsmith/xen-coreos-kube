@@ -5,7 +5,7 @@ virt-install \
   --import \
   --name master1 \
   --ram 3072 \
-  --vcpus 2 \
+  --vcpus 1 \
   --os-type=linux \
   --os-variant=virtio26 \
   --disk path=/var/lib/libvirt/images/coreos/master1.qcow2,format=qcow2,bus=virtio \
@@ -21,7 +21,7 @@ virt-install \
   --import \
   --name node1 \
   --ram 3072 \
-  --vcpus 2 \
+  --vcpus 1 \
   --os-type=linux \
   --os-variant=virtio26 \
   --disk path=/var/lib/libvirt/images/coreos/node1.qcow2,format=qcow2,bus=virtio \
