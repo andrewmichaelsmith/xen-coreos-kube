@@ -1,11 +1,7 @@
-sudo virsh destroy master1
-sudo virsh undefine master1
+xl destroy master1
 
-sudo virsh destroy node1
-sudo virsh undefine node1
+xl destroy node1
 
-sudo virsh destroy node2
-sudo virsh undefine node2
+xl destroy node2
 
-sudo virsh destroy node3
-sudo virsh undefine node3
+xl destroy node3
