@@ -1,4 +1,6 @@
 *.qcow2
+*.bin
+*.iso
 *.img
 *.swp
 master1/openstack/latest/user_data
