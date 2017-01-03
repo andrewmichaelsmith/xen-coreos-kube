@@ -48,8 +48,6 @@ write_files:
           name: ssl-certs-host
 
 coreos:
-  update:
-    reboot-straegy: etcd-lock
   etcd2:
     advertise-client-urls: http://192.168.122.3:2379
     initial-advertise-peer-urls: http://192.168.122.3:2380
@@ -159,8 +157,8 @@ coreos:
         [Install]
         WantedBy=sockets.target
   update:
-    group: alpha
-    reboot-strategy: off
+    group: beta
+    reboot-strategy: etcd-lock
 
 
 #cloud-config
