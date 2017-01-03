@@ -3,6 +3,7 @@
 *.iso
 *.img
 *.swp
+tempfile
 master1/openstack/latest/user_data
 node1/openstack/latest/user_data
 node2/openstack/latest/user_data
