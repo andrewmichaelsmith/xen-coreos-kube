@@ -40,7 +40,7 @@ write_files:
       spec:
         containers:
         - name: kube-apiserver
-          image: gcr.io/google_containers/hyperkube:v1.4.5
+          image: gcr.io/google_containers/hyperkube:v1.5.1
           command:
           - /hyperkube
           - apiserver
@@ -92,7 +92,7 @@ write_files:
         hostNetwork: true
         containers:
         - name: kube-proxy
-          image: gcr.io/google_containers/hyperkube:v1.4.5
+          image: gcr.io/google_containers/hyperkube:v1.5.1
           command:
           - /hyperkube
           - proxy
@@ -120,7 +120,7 @@ write_files:
       spec:
         containers:
         - name: kube-controller-manager
-          image: gcr.io/google_containers/hyperkube:v1.4.5
+          image: gcr.io/google_containers/hyperkube:v1.5.1
           command:
           - /hyperkube
           - controller-manager
@@ -156,7 +156,7 @@ write_files:
         hostNetwork: true
         containers:
         - name: kube-scheduler
-          image: gcr.io/google_containers/hyperkube:v1.4.5
+          image: gcr.io/google_containers/hyperkube:v1.5.1
           command:
           - /hyperkube
           - scheduler
