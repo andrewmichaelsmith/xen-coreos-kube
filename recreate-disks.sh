@@ -2,6 +2,7 @@ rm master1.bin
 rm node1.bin
 rm node2.bin
 rm node3.bin
+rm tempfile
 
 
 cp coreos_production_xen_image.bin master1.bin
