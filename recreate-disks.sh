@@ -11,14 +11,14 @@ cp coreos_production_xen_image.bin node2.bin
 cp coreos_production_xen_image.bin node3.bin
 
 #TODO: Undoubtedly a better way than this
-dd if=/dev/zero of=tempfile bs=1G count=2
+dd if=/dev/zero of=tempfile bs=4G count=2
 
 cat tempfile >> master1.bin
 cat tempfile >> node1.bin
 cat tempfile >> node2.bin
 cat tempfile >> node3.bin
 
-
+./gen.sh #update config
 mkisofs -R -V config-2 -o master1-config.iso master1/
 mkisofs -R -V config-2 -o node1-config.iso node1/
 mkisofs -R -V config-2 -o node2-config.iso node2/
