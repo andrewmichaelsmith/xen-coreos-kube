@@ -46,6 +46,10 @@ write_files:
         - hostPath:
             path: /usr/share/ca-certificates
           name: ssl-certs-host
+  - path: /etc/systemd/system/docker.service.d/50-journald.conf
+    content: |
+      [Service]
+      Environment='DOCKER_OPTS=--log-driver=journald"'
 
 coreos:
   etcd2:

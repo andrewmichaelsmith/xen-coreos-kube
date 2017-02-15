@@ -163,6 +163,10 @@ write_files:
           - --master=http://192.168.122.254:8080
           securityContext:
             privileged: true
+  - path: /etc/systemd/system/docker.service.d/50-journald.conf
+    content: |
+      [Service]
+      Environment='DOCKER_OPTS=--log-driver=journald"'
   - path: /etc/conf.d/nfs
     permissions: '0644'
     content: |
