@@ -18,12 +18,12 @@ write_files:
   - path: /etc/kubernetes/ssl/apiserver.pem
     permissions: '0644'
     content: |
-	APISERVER.PEM
+        APISERVER.PEM
   - path: /etc/kubernetes/ssl/apiserver-key.pem
     permissions: '0600'
     owner: root:root
     content: |
-	APISERVER-KEY.PEM
+        APISERVER-KEY.PEM
   - path: /etc/flannel/options.env
     permissions: '0644'
     content: |
